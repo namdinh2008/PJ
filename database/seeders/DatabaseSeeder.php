@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call([
+            CarSeeder::class,
             CarModelSeeder::class,
             AccessorySeeder::class,
             ProductSeeder::class,
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
             CarVariantImageSeeder::class,
             CarVariantOptionSeeder::class,
             OrderSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }

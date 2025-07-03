@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CartItemController;
 use App\Http\Controllers\Admin\BlogController;
-use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AccessoryController;
 use App\Http\Controllers\Admin\OrderLogController;
@@ -23,6 +22,9 @@ use App\Http\Controllers\Admin\OrderLogController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\UserOrderController;
+use App\Http\Controllers\User\WishlistController;
+use App\Http\Controllers\User\UserCarVariantController;
+
 
 // --- Trang chủ ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -31,6 +33,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Wishlist (User)
+Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
+
+// Carvariant detail (User)
+Route::get('/car-variants/{id}', [UserCarVariantController::class, 'show'])->name('car_variants.show');
 
 // --- Profile cá nhân ---
 Route::middleware('auth')->group(function () {
@@ -149,12 +157,6 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
         Route::get('/edit/{blog}', [BlogController::class, 'edit'])->name('edit');
         Route::put('/update/{blog}', [BlogController::class, 'update'])->name('update');
         Route::delete('/delete/{blog}', [BlogController::class, 'destroy'])->name('destroy');
-    });
-
-    // Wishlists
-    Route::prefix('wishlists')->name('wishlists.')->group(function () {
-        Route::get('/', [WishlistController::class, 'index'])->name('index');
-        Route::delete('/delete/{wishlist}', [WishlistController::class, 'destroy'])->name('destroy');
     });
 
     // Users

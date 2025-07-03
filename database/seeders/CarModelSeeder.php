@@ -3,37 +3,53 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Car;
 use App\Models\CarModel;
 
 class CarModelSeeder extends Seeder
 {
     public function run(): void
     {
+        // Lấy danh sách cars để gán model tương ứng
+        $cars = Car::all()->keyBy('name');
+
         $models = [
             [
+                'car_id' => $cars['Tesla']->id ?? null,
                 'name' => 'Model S',
-                'description' => 'Tesla Model S - Luxury all-electric sedan',
-                'image_url' => 'https://i.pinimg.com/736x/42/82/37/428237ad7f8581c887d716f82706c4f7.jpg',
+                'description' => 'Electric sedan with high performance and long range.',
+                'is_active' => true,
             ],
             [
-                'name' => 'Model 3',
-                'description' => 'Tesla Model 3 - Affordable all-electric sedan',
-                'image_url' => 'https://i.pinimg.com/736x/c9/4f/de/c94fdeb008bdf6d791cff571154323c9.jpg',
-            ],
-            [
+                'car_id' => $cars['Tesla']->id ?? null,
                 'name' => 'Model X',
-                'description' => 'Tesla Model X - All-electric SUV with falcon wing doors',
-                'image_url' => 'https://i.pinimg.com/736x/9d/9f/c4/9d9fc47209441fb2b3f5b0fd46da283c.jpg',
+                'description' => 'Luxury electric SUV with falcon wing doors.',
+                'is_active' => true,
             ],
             [
-                'name' => 'Model Y',
-                'description' => 'Tesla Model Y - Versatile all-electric compact SUV',
-                'image_url' => 'https://i.pinimg.com/736x/ea/98/d6/ea98d6e41f0f50e922eb656cbb8d9306.jpg',
+                'car_id' => $cars['Toyota']->id ?? null,
+                'name' => 'Corolla',
+                'description' => 'Reliable and fuel-efficient compact sedan.',
+                'is_active' => true,
+            ],
+            [
+                'car_id' => $cars['BMW']->id ?? null,
+                'name' => 'X5',
+                'description' => 'Luxury mid-size SUV with premium features.',
+                'is_active' => true,
+            ],
+            [
+                'car_id' => $cars['Hyundai']->id ?? null,
+                'name' => 'Elantra',
+                'description' => 'Compact sedan with modern design and tech.',
+                'is_active' => true,
             ],
         ];
 
         foreach ($models as $model) {
-            CarModel::create($model);
+            if ($model['car_id']) {
+                CarModel::create($model);
+            }
         }
     }
 }
