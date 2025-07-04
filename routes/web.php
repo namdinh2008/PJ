@@ -24,6 +24,7 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\UserOrderController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\UserCarVariantController;
+use App\Http\Controllers\User\AccessoryController as UserAccessoryController;
 
 
 // --- Trang chủ ---
@@ -35,10 +36,48 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Wishlist (User)
-Route::post('/wishlist/add', [WishlistController::class, 'add'])->name('wishlist.add');
+Route::prefix('wishlist')->name('wishlist.')->group(function () {
+    Route::get('/', [WishlistController::class, 'index'])->name('index');
+    Route::post('/add', [WishlistController::class, 'add'])->name('add');
+    Route::post('/remove', [WishlistController::class, 'remove'])->name('remove');
+    Route::post('/clear', [WishlistController::class, 'clear'])->name('clear');
+    Route::get('/check', [WishlistController::class, 'check'])->name('check');
+    Route::get('/count', [WishlistController::class, 'getCount'])->name('count');
+})->middleware('migrate.wishlist');
 
 // Carvariant detail (User)
 Route::get('/car-variants/{id}', [UserCarVariantController::class, 'show'])->name('car_variants.show');
+
+// Accessory detail (User)
+Route::get('/accessories/{id}', [UserAccessoryController::class, 'show'])->name('accessories.show');
+
+// Test route for debugging
+Route::get('/test-variant/{id}', function($id) {
+    $variant = \App\Models\CarVariant::with('product')->find($id);
+    if ($variant) {
+        echo "Variant: " . $variant->name . "<br>";
+        echo "Product: " . ($variant->product ? $variant->product->name : 'No product') . "<br>";
+        echo "Product ID: " . ($variant->product ? $variant->product->id : 'No ID') . "<br>";
+    } else {
+        echo "Variant not found";
+    }
+});
+
+// Test wishlist route
+Route::get('/test-wishlist', function() {
+    try {
+        $wishlist = new \App\Models\Wishlist();
+        echo "Wishlist model created successfully<br>";
+        echo "Table name: " . $wishlist->getTable() . "<br>";
+        
+        $count = \App\Models\Wishlist::count();
+        echo "Wishlist count: " . $count . "<br>";
+        
+        echo "Wishlist table exists and is working!";
+    } catch (\Exception $e) {
+        echo "Error: " . $e->getMessage();
+    }
+});
 
 // --- Profile cá nhân ---
 Route::middleware('auth')->group(function () {
@@ -52,9 +91,11 @@ Route::post('/order', [UserOrderController::class, 'store'])->name('order.store'
 // Cart
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index'); // Xem giỏ hàng
+    Route::get('/count', [CartController::class, 'getCount'])->name('count'); // Lấy số lượng cart
     Route::post('/add', [CartController::class, 'add'])->name('add'); // Thêm vào giỏ
     Route::post('/update/{cartItem}', [CartController::class, 'update'])->name('update'); // Cập nhật số lượng
     Route::delete('/remove/{cartItem}', [CartController::class, 'remove'])->name('remove'); // Xóa khỏi giỏ
+    Route::post('/clear', [CartController::class, 'clear'])->name('clear'); // Xóa toàn bộ giỏ
 });
 
 // --- Cart routes ---

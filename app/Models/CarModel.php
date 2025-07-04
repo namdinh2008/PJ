@@ -15,4 +15,23 @@ class CarModel extends Model
     {
         return $this->belongsTo(Car::class);
     }
+
+    public function variants()
+    {
+        return $this->hasMany(CarVariant::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(CarModelImage::class);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->image_path) {
+            return asset('storage/' . $this->image_path);
+        }
+        // Use placeholder images for demo
+        return 'https://via.placeholder.com/400x300/1f2937/ffffff?text=' . urlencode($this->name);
+    }
 }

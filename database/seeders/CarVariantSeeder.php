@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\CarModel;
 use App\Models\CarVariant;
+use App\Models\Product;
 
 class CarVariantSeeder extends Seeder
 {
@@ -57,7 +58,17 @@ class CarVariantSeeder extends Seeder
 
         foreach ($variants as $variant) {
             if ($variant['car_model_id']) {
-                CarVariant::create($variant);
+                $carVariant = CarVariant::create($variant);
+
+                // Tạo Product liên kết với CarVariant này
+                Product::create([
+                    'name' => $carVariant->name,
+                    'description' => $carVariant->description,
+                    'price' => $carVariant->price,
+                    'product_type' => 'car_variant',
+                    'reference_id' => $carVariant->id,
+                    'is_active' => true,
+                ]);
             }
         }
     }

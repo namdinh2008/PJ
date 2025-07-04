@@ -44,6 +44,11 @@ class AccessorySeeder extends Seeder
 
             Accessory::create([
                 'product_id' => $product->id,
+                'name' => $item['name'],
+                'description' => $item['description'],
+                'price' => $item['price'],
+                // Nếu có các trường khác như image_path, is_active thì thêm vào đây
+                'is_active' => true,
             ]);
         }
     }

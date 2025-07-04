@@ -10,7 +10,12 @@ class BlogSeeder extends Seeder
 {
     public function run(): void
     {
-        $adminUsers = User::where('is_admin', true)->get();
+        $adminUsers = User::where('role', 'admin')->get();
+
+        if ($adminUsers->isEmpty()) {
+            // Nếu chưa có admin nào, có thể tạo user admin mẫu ở đây hoặc bỏ qua
+            return;
+        }
 
         for ($i = 0; $i < 10; $i++) {
             $admin = $adminUsers->random();
@@ -19,7 +24,7 @@ class BlogSeeder extends Seeder
                 'admin_id' => $admin->id,
                 'title' => fake()->sentence(6, true),
                 'content' => fake()->paragraphs(3, true),
-                'image_url' => fake()->imageUrl(640, 480, 'car', true, 'Tesla'),
+                'image_path' => fake()->imageUrl(640, 480, 'car', true, 'Tesla'),
                 'is_published' => fake()->boolean(80),
                 'published_at' => now()->subDays(rand(0, 30)),
             ]);

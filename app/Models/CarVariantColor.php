@@ -19,4 +19,12 @@ class CarVariantColor extends Model
     {
         return $this->belongsTo(CarVariant::class, 'car_variant_id');
     }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->attributes['image_url']) {
+            return asset('storage/' . $this->attributes['image_url']);
+        }
+        return 'https://via.placeholder.com/100x100/cccccc/ffffff?text=Color';
+    }
 }

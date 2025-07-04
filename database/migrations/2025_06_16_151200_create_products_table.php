@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->decimal('price', 12, 2);
             $table->string('image_url')->nullable();
             $table->enum('product_type', ['car_variant', 'accessory']);
-            $table->unsignedBigInteger('reference_id');
+            $table->unsignedBigInteger('reference_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

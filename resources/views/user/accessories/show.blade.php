@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $variant->name)
+@section('title', $accessory->name)
 
 @section('content')
 <div class="bg-gray-50 min-h-screen">
@@ -18,19 +18,13 @@
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="#" class="text-gray-500 hover:text-gray-700">{{ $variant->carModel->car->name ?? 'Xe hơi' }}</a>
+                            <a href="#" class="text-gray-500 hover:text-gray-700">Phụ kiện</a>
                         </div>
                     </li>
                     <li>
                         <div class="flex items-center">
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <a href="#" class="text-gray-500 hover:text-gray-700">{{ $variant->carModel->name ?? 'Model' }}</a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-900 font-medium">{{ $variant->name }}</span>
+                            <span class="text-gray-900 font-medium">{{ $accessory->name }}</span>
                         </div>
                     </li>
                 </ol>
@@ -43,41 +37,33 @@
             <!-- Image Gallery -->
             <div class="space-y-4">
                 <div class="relative">
-                    <img src="{{ $variant->main_image_url }}"
+                    <img src="{{ $accessory->product->image_url }}"
                          id="main-image"
                          class="w-full h-96 object-cover rounded-2xl shadow-lg"
-                         alt="{{ $variant->name }}">
+                         alt="{{ $accessory->name }}">
                     <div class="absolute top-4 left-4">
-                        <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                            <i class="fas fa-star mr-1"></i>Nổi bật
+                        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-tag mr-1"></i>Phụ kiện
                         </span>
                     </div>
                 </div>
                 
                 <!-- Thumbnail Gallery -->
                 <div class="grid grid-cols-4 gap-4">
-                    @foreach($variant->colors as $color)
-                        <img src="{{ $color->image_url ?? $variant->main_image_url }}"
+                    @for($i = 1; $i <= 4; $i++)
+                        <img src="{{ $accessory->product->image_url }}"
                              class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition"
                              onclick="changeMainImage(this.src)"
-                             alt="{{ $color->color_name }}">
-                    @endforeach
-                    @if($variant->colors->count() < 4)
-                        @for($i = $variant->colors->count(); $i < 4; $i++)
-                            <img src="{{ $variant->main_image_url }}"
-                                 class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition"
-                                 onclick="changeMainImage(this.src)"
-                                 alt="{{ $variant->name }}">
-                        @endfor
-                    @endif
+                             alt="{{ $accessory->name }}">
+                    @endfor
                 </div>
             </div>
 
             <!-- Product Info -->
             <div class="space-y-6">
                 <div>
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $variant->name }}</h1>
-                    <p class="text-lg text-gray-600 mb-4">{{ $variant->carModel->name ?? 'Model' }}</p>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ $accessory->name }}</h1>
+                    <p class="text-lg text-gray-600 mb-4">Phụ kiện xe hơi cao cấp</p>
                     
                     <!-- Rating -->
                     <div class="flex items-center mb-4">
@@ -86,50 +72,25 @@
                                 <i class="fas fa-star"></i>
                             @endfor
                         </div>
-                        <span class="ml-2 text-gray-600">(4.8/5) - 128 đánh giá</span>
+                        <span class="ml-2 text-gray-600">(4.7/5) - 95 đánh giá</span>
                     </div>
                 </div>
 
                 <!-- Price -->
-                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-2xl">
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-2xl">
                     <div class="flex items-baseline gap-4">
-                        <span class="text-4xl font-bold text-indigo-600">{{ number_format($variant->product->price) }} đ</span>
-                        <span class="text-lg text-gray-500 line-through">{{ number_format($variant->product->price * 1.1) }} đ</span>
-                        <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">-10%</span>
+                        <span class="text-4xl font-bold text-green-600">{{ number_format($accessory->product->price) }} đ</span>
+                        <span class="text-lg text-gray-500 line-through">{{ number_format($accessory->product->price * 1.15) }} đ</span>
+                        <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-semibold">-15%</span>
                     </div>
                     <p class="text-gray-600 mt-2">Giá đã bao gồm thuế VAT</p>
                 </div>
-
-                <!-- Color Options -->
-                @if($variant->colors->count() > 0)
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Chọn màu sắc</h3>
-                    <div class="flex gap-3">
-                        @foreach($variant->colors as $color)
-                            <button type="button" 
-                                    onclick="selectColor({{ $color->id }}, '{{ $color->color_name }}')"
-                                    class="color-option flex flex-col items-center p-3 border-2 border-gray-200 rounded-lg hover:border-indigo-500 transition"
-                                    data-color-id="{{ $color->id }}">
-                                <div class="w-8 h-8 rounded-full bg-{{ strtolower($color->color_name) }}-500 mb-2"></div>
-                                <span class="text-sm text-gray-700">{{ $color->color_name }}</span>
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
 
                 <!-- Add to Cart -->
                 <div class="space-y-4">
                     <form method="POST" action="{{ route('cart.add') }}" id="add-to-cart-form" class="space-y-4">
                         @csrf
-                        <input type="hidden" name="product_id" value="{{ $variant->product->id }}">
-                        <input type="hidden" name="color_id" value="" id="selected-color-id">
-                        <!-- Debug info -->
-                        <div class="text-xs text-gray-500 mb-2">
-                            Debug: Product ID = {{ $variant->product->id ?? 'NULL' }}, 
-                            Variant ID = {{ $variant->id }}, 
-                            Product Name = {{ $variant->product->name ?? 'NULL' }}
-                        </div>
+                        <input type="hidden" name="product_id" value="{{ $accessory->product_id }}">
                         
                         <div class="flex items-center gap-4">
                             <label class="text-lg font-semibold text-gray-900">Số lượng:</label>
@@ -147,12 +108,12 @@
 
                         <div class="flex gap-4">
                             <button type="submit"
-                                    class="flex-1 bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-700 transition flex items-center justify-center gap-3 text-lg">
+                                    class="flex-1 bg-green-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-green-700 transition flex items-center justify-center gap-3 text-lg">
                                 <i class="fas fa-cart-plus"></i>
                                 Thêm vào giỏ hàng
                             </button>
                             <button type="button"
-                                    class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-indigo-500 transition">
+                                    class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-green-500 transition">
                                 <i class="far fa-heart text-xl"></i>
                             </button>
                         </div>
@@ -162,13 +123,13 @@
                 <!-- Quick Info -->
                 <div class="grid grid-cols-2 gap-4 pt-6 border-t">
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <i class="fas fa-shipping-fast text-2xl text-indigo-600 mb-2"></i>
+                        <i class="fas fa-shipping-fast text-2xl text-green-600 mb-2"></i>
                         <div class="text-sm font-semibold">Giao hàng miễn phí</div>
-                        <div class="text-xs text-gray-500">Trong 3-5 ngày</div>
+                        <div class="text-xs text-gray-500">Trong 2-3 ngày</div>
                     </div>
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <i class="fas fa-shield-alt text-2xl text-indigo-600 mb-2"></i>
-                        <div class="text-sm font-semibold">Bảo hành 12 tháng</div>
+                        <i class="fas fa-shield-alt text-2xl text-green-600 mb-2"></i>
+                        <div class="text-sm font-semibold">Bảo hành 6 tháng</div>
                         <div class="text-xs text-gray-500">Chính hãng</div>
                     </div>
                 </div>
@@ -180,7 +141,7 @@
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8">
                     <button onclick="showTab('description')" 
-                            class="tab-button border-b-2 border-indigo-500 py-2 px-1 text-sm font-medium text-indigo-600">
+                            class="tab-button border-b-2 border-green-500 py-2 px-1 text-sm font-medium text-green-600">
                         Mô tả
                     </button>
                     <button onclick="showTab('specifications')" 
@@ -189,7 +150,7 @@
                     </button>
                     <button onclick="showTab('reviews')" 
                             class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        Đánh giá (128)
+                        Đánh giá (95)
                     </button>
                 </nav>
             </div>
@@ -198,42 +159,42 @@
             <div id="description" class="tab-content py-8">
                 <div class="prose max-w-none">
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Mô tả sản phẩm</h3>
-                    <p class="text-gray-700 leading-relaxed mb-6">{{ $variant->description }}</p>
+                    <p class="text-gray-700 leading-relaxed mb-6">{{ $accessory->description }}</p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                         <div class="bg-white p-6 rounded-xl shadow-sm">
                             <h4 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                <i class="fas fa-cog text-indigo-600"></i> Tính năng nổi bật
+                                <i class="fas fa-cog text-green-600"></i> Tính năng nổi bật
                             </h4>
                             <ul class="space-y-2 text-gray-700">
-                                <li class="flex items-center gap-2">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    Thiết kế hiện đại, sang trọng
-                                </li>
                                 <li class="flex items-center gap-2">
                                     <i class="fas fa-check text-green-500"></i>
                                     Chất liệu cao cấp, bền bỉ
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <i class="fas fa-check text-green-500"></i>
-                                    Dễ dàng lắp đặt và sử dụng
+                                    Thiết kế hiện đại, dễ lắp đặt
                                 </li>
                                 <li class="flex items-center gap-2">
                                     <i class="fas fa-check text-green-500"></i>
-                                    Bảo hành chính hãng 12 tháng
+                                    Tương thích với nhiều dòng xe
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500"></i>
+                                    Bảo hành chính hãng 6 tháng
                                 </li>
                             </ul>
                         </div>
                         
                         <div class="bg-white p-6 rounded-xl shadow-sm">
                             <h4 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                <i class="fas fa-info-circle text-indigo-600"></i> Thông tin bổ sung
+                                <i class="fas fa-info-circle text-green-600"></i> Thông tin bổ sung
                             </h4>
                             <ul class="space-y-2 text-gray-700">
                                 <li><strong>Xuất xứ:</strong> Chính hãng</li>
                                 <li><strong>Chất liệu:</strong> Cao cấp</li>
                                 <li><strong>Kích thước:</strong> Đa dạng</li>
-                                <li><strong>Màu sắc:</strong> {{ $variant->colors->pluck('color_name')->implode(', ') }}</li>
+                                <li><strong>Màu sắc:</strong> Đen, Trắng, Xám</li>
                             </ul>
                         </div>
                     </div>
@@ -250,15 +211,15 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Tên sản phẩm:</span>
-                                    <span class="font-medium">{{ $variant->name }}</span>
+                                    <span class="font-medium">{{ $accessory->name }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Model:</span>
-                                    <span class="font-medium">{{ $variant->carModel->name ?? 'N/A' }}</span>
+                                    <span class="text-gray-600">Loại phụ kiện:</span>
+                                    <span class="font-medium">Phụ kiện xe hơi</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Hãng xe:</span>
-                                    <span class="font-medium">{{ $variant->carModel->car->name ?? 'N/A' }}</span>
+                                    <span class="text-gray-600">Thương hiệu:</span>
+                                    <span class="font-medium">Chính hãng</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Trạng thái:</span>
@@ -276,7 +237,7 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Trọng lượng:</span>
-                                    <span class="font-medium">2-5kg</span>
+                                    <span class="font-medium">0.5-2kg</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Chất liệu:</span>
@@ -284,7 +245,7 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">Bảo hành:</span>
-                                    <span class="font-medium">12 tháng</span>
+                                    <span class="font-medium">6 tháng</span>
                                 </div>
                             </div>
                         </div>
@@ -296,7 +257,7 @@
             <div id="reviews" class="tab-content py-8 hidden">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-2xl font-bold text-gray-900">Đánh giá sản phẩm</h3>
-                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                    <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                         Viết đánh giá
                     </button>
                 </div>
@@ -306,13 +267,13 @@
                     <div class="bg-white p-6 rounded-xl shadow-sm">
                         <div class="flex items-center gap-8">
                             <div class="text-center">
-                                <div class="text-4xl font-bold text-indigo-600">4.8</div>
+                                <div class="text-4xl font-bold text-green-600">4.7</div>
                                 <div class="flex text-yellow-400 justify-center my-2">
                                     @for($i = 1; $i <= 5; $i++)
                                         <i class="fas fa-star"></i>
                                     @endfor
                                 </div>
-                                <div class="text-sm text-gray-600">128 đánh giá</div>
+                                <div class="text-sm text-gray-600">95 đánh giá</div>
                             </div>
                             
                             <div class="flex-1">
@@ -321,9 +282,9 @@
                                         <div class="flex items-center gap-2">
                                             <span class="text-sm text-gray-600 w-8">{{ $i }} sao</span>
                                             <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                                <div class="bg-yellow-400 h-2 rounded-full" style="width: {{ 100 - ($i * 10) }}%"></div>
+                                                <div class="bg-yellow-400 h-2 rounded-full" style="width: {{ 100 - ($i * 15) }}%"></div>
                                             </div>
-                                            <span class="text-sm text-gray-600 w-12">{{ 100 - ($i * 10) }}%</span>
+                                            <span class="text-sm text-gray-600 w-12">{{ 100 - ($i * 15) }}%</span>
                                         </div>
                                     @endfor
                                 </div>
@@ -336,8 +297,8 @@
                         <div class="bg-white p-6 rounded-xl shadow-sm">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <span class="text-indigo-600 font-semibold">NV</span>
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <span class="text-green-600 font-semibold">NV</span>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-gray-900">Nguyễn Văn A</div>
@@ -348,16 +309,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="text-sm text-gray-500">2 ngày trước</span>
+                                <span class="text-sm text-gray-500">3 ngày trước</span>
                             </div>
-                            <p class="text-gray-700">Sản phẩm chất lượng rất tốt, giao hàng nhanh chóng. Rất hài lòng với dịch vụ!</p>
+                            <p class="text-gray-700">Phụ kiện chất lượng rất tốt, lắp đặt dễ dàng và phù hợp với xe của tôi!</p>
                         </div>
 
                         <div class="bg-white p-6 rounded-xl shadow-sm">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <span class="text-indigo-600 font-semibold">TL</span>
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <span class="text-green-600 font-semibold">TL</span>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-gray-900">Trần Lê B</div>
@@ -371,7 +332,7 @@
                                 </div>
                                 <span class="text-sm text-gray-500">1 tuần trước</span>
                             </div>
-                            <p class="text-gray-700">Chất lượng sản phẩm tốt, giá cả hợp lý. Sẽ mua thêm trong tương lai.</p>
+                            <p class="text-gray-700">Sản phẩm đẹp, giá cả hợp lý. Giao hàng nhanh và đóng gói cẩn thận.</p>
                         </div>
                     </div>
                 </div>
@@ -380,15 +341,15 @@
 
         <!-- Related Products -->
         <div class="mt-16">
-            <h3 class="text-2xl font-bold text-gray-900 mb-8">Sản phẩm liên quan</h3>
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">Phụ kiện liên quan</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @for($i = 1; $i <= 4; $i++)
                     <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition">
-                        <img src="https://via.placeholder.com/300x200/4f46e5/ffffff?text=Sản+phẩm+{{ $i }}" 
-                             class="w-full h-48 object-cover" alt="Sản phẩm {{ $i }}">
+                        <img src="https://via.placeholder.com/300x200/10b981/ffffff?text=Phụ+kiện+{{ $i }}" 
+                             class="w-full h-48 object-cover" alt="Phụ kiện {{ $i }}">
                         <div class="p-4">
-                            <h4 class="font-semibold text-gray-900 mb-2">Sản phẩm liên quan {{ $i }}</h4>
-                            <p class="text-indigo-600 font-bold">{{ number_format(rand(1000000, 5000000)) }} đ</p>
+                            <h4 class="font-semibold text-gray-900 mb-2">Phụ kiện liên quan {{ $i }}</h4>
+                            <p class="text-green-600 font-bold">{{ number_format(rand(500000, 2000000)) }} đ</p>
                         </div>
                     </div>
                 @endfor
@@ -409,21 +370,6 @@ function changeQuantity(delta) {
     input.value = newValue;
 }
 
-function selectColor(colorId, colorName) {
-    // Remove active state from all color options
-    document.querySelectorAll('.color-option').forEach(option => {
-        option.classList.remove('border-indigo-500', 'bg-indigo-50');
-        option.classList.add('border-gray-200');
-    });
-    
-    // Add active state to selected color
-    event.target.closest('.color-option').classList.remove('border-gray-200');
-    event.target.closest('.color-option').classList.add('border-indigo-500', 'bg-indigo-50');
-    
-    // Update hidden input
-    document.getElementById('selected-color-id').value = colorId;
-}
-
 function showTab(tabName) {
     // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -432,7 +378,7 @@ function showTab(tabName) {
     
     // Remove active state from all tab buttons
     document.querySelectorAll('.tab-button').forEach(button => {
-        button.classList.remove('border-indigo-500', 'text-indigo-600');
+        button.classList.remove('border-green-500', 'text-green-600');
         button.classList.add('border-transparent', 'text-gray-500');
     });
     
@@ -441,7 +387,7 @@ function showTab(tabName) {
     
     // Add active state to clicked button
     event.target.classList.remove('border-transparent', 'text-gray-500');
-    event.target.classList.add('border-indigo-500', 'text-indigo-600');
+    event.target.classList.add('border-green-500', 'text-green-600');
 }
 
 // Add to cart with AJAX and animation
@@ -574,4 +520,4 @@ function updateCartCount(count) {
 // No need to redefine it here
 </script>
 @endpush
-@endsection
+@endsection 

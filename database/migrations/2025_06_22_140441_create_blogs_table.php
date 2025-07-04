@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('content');
-            $table->string('image_url')->nullable();
+            $table->string('image_path')->nullable();
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();

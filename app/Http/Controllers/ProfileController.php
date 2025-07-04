@@ -16,8 +16,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+        $orders = $user->orders()->with(['items.product', 'items.color'])->orderByDesc('created_at')->get();
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'orders' => $orders,
         ]);
     }
 

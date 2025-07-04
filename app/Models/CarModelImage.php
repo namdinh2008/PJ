@@ -19,4 +19,9 @@ class CarModelImage extends Model
     {
         return $this->belongsTo(CarModel::class);
     }
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image_url ?? 'https://via.placeholder.com/400x300/1f2937/ffffff?text=Image';
+    }
 }
