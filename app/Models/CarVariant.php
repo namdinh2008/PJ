@@ -42,7 +42,28 @@ class CarVariant extends Model
         if ($this->main_image_path) {
             return asset('storage/' . $this->main_image_path);
         }
-        // Use placeholder images for demo
-        return 'https://via.placeholder.com/400x300/4f46e5/ffffff?text=' . urlencode($this->name);
+        $variantName = $this->name ?? 'Variant';
+        $encodedName = urlencode($variantName);
+        return "https://via.placeholder.com/400x300/4f46e5/ffffff?text={$encodedName}";
+    }
+
+    public function getImageUrlAttribute()
+    {
+        // First check if there's a main image from the images relationship
+        $mainImage = $this->images()->where('is_main', true)->first();
+        if ($mainImage) {
+            return $mainImage->image_url;
+        }
+
+        // If no main image, get the first image
+        $firstImage = $this->images()->first();
+        if ($firstImage) {
+            return $firstImage->image_url;
+        }
+
+        // Fall back to placeholder
+        $variantName = $this->name ?? 'Variant';
+        $encodedName = urlencode($variantName);
+        return "https://via.placeholder.com/400x300/4f46e5/ffffff?text={$encodedName}";
     }
 }

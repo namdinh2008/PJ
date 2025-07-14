@@ -3,6 +3,9 @@
 @section('title', 'Home')
 
 @section('content')
+@php
+use Illuminate\Support\Str;
+@endphp
 
 {{-- ===== Hero Banner ===== --}}
 <section class="relative h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center text-white overflow-hidden">
@@ -48,7 +51,7 @@
             @foreach ($cars as $car)
             <div class="cursor-pointer group car-brand-logo" data-car-id="{{ $car->id }}">
                 <div class="bg-gray-50 rounded-2xl p-6 hover:bg-indigo-50 transition duration-300 group-hover:shadow-lg">
-                    <img src="{{ $car->logo_path }}"
+                    <img src="{{ $car->logo_url }}"
                         class="w-20 h-20 object-contain mx-auto mb-4 transition-transform group-hover:scale-110"
                         alt="{{ $car->name }}">
                     <p class="text-gray-800 font-semibold text-center">{{ $car->name }}</p>
@@ -66,8 +69,7 @@
                     @foreach ($car->carModels as $model)
                     <a href="{{ route('car_models.show', $model->id) }}"
                         class="block bg-white rounded-xl p-4 hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
-                        <img src="{{ $model->image_url }}" class="w-full h-32 object-cover rounded-lg mb-3"
-                            alt="{{ $model->name }}">
+                        <img src="{{ $carModelImages->where('id', $model->id)->first()->image_url ?? 'default-image.jpg' }}" alt="{{ $model->name }}" class="w-full h-32 object-cover rounded-lg mb-3">
                         <h4 class="text-center font-semibold text-gray-800">{{ $model->name }}</h4>
                     </a>
                     @endforeach
@@ -166,7 +168,7 @@
                     @endif
                     <a href="{{ route('accessories.show', $item->id) }}" class="block hover:no-underline text-gray-800">
                         <div class="relative overflow-hidden">
-                            <img src="{{ $item->product->image_url }}" 
+                            <img src="{{ $item->image_path }}" 
                                  class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" 
                                  alt="{{ $item->name }}">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
@@ -323,7 +325,7 @@
             @foreach ($blogs as $blog)
             <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 transform hover:-translate-y-2 group">
                 <div class="relative overflow-hidden">
-                    <img src="{{ $blog->image_path ? asset('storage/' . $blog->image_path) : asset('images/default-blog.jpg') }}"
+                    <img src="{{ Str::startsWith($blog->image_path, ['http://', 'https://']) ? $blog->image_path : ($blog->image_path ? asset('storage/' . $blog->image_path) : asset('images/default-blog.jpg')) }}"
                         class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" 
                         alt="{{ $blog->title }}" />
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>

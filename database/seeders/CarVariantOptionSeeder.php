@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\CarVariant;
+use Illuminate\Support\Facades\DB;
 
 class CarVariantOptionSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class CarVariantOptionSeeder extends Seeder
         // Ví dụ seed cho mỗi variant 2 option
         $variants = CarVariant::all();
         foreach ($variants as $variant) {
-            \DB::table('car_variant_options')->insert([
+            DB::table('car_variant_options')->insert([
                 [
                     'car_variant_id' => $variant->id,
                     'option_name' => 'Gói tự lái',

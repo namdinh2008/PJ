@@ -28,19 +28,23 @@ class HomeController extends Controller
         // Lấy 4 bài viết mới nhất
         $blogs = Blog::latest()->take(4)->get();
 
-        $featuredCars = CarVariant::with('product','colors')->where('is_active', 1)->take(4)->get();
+        $featuredCars = CarVariant::with('product', 'colors')->where('is_active', 1)->take(4)->get();
         // Lấy các phiên bản xe (CarVariant) nổi bật
         $featuredVariants = CarVariant::with('product')
             ->where('is_active', 1)
             ->take(4)
             ->get();
 
+        $carModelImages = CarModel::with('images')->get();
+
         return view('user.home', compact(
             'cars',
             'carModels',
             'accessories',
             'blogs',
-            'featuredVariants'
+            'featuredVariants',
+            'featuredCars',
+            'carModelImages'
         ));
     }
 }

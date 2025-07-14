@@ -32,9 +32,16 @@ class Product extends Model
     public function getImageUrlAttribute()
     {
         if ($this->attributes['image_url']) {
+            // Check if it's an external URL (starts with http)
+            if (filter_var($this->attributes['image_url'], FILTER_VALIDATE_URL)) {
+                return $this->attributes['image_url'];
+            }
+            // If it's a local file path, prepend storage path
             return asset('storage/' . $this->attributes['image_url']);
         }
         // Use placeholder images for demo
-        return 'https://via.placeholder.com/300x200/10b981/ffffff?text=' . urlencode($this->name);
+        $productName = $this->name ?? 'Product';
+        $encodedName = urlencode($productName);
+        return "https://via.placeholder.com/300x200/10b981/ffffff?text={$encodedName}";
     }
 }

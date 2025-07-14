@@ -24,7 +24,7 @@ class BlogSeeder extends Seeder
                 'admin_id' => $admin->id,
                 'title' => fake()->sentence(6, true),
                 'content' => fake()->paragraphs(3, true),
-                'image_path' => fake()->imageUrl(640, 480, 'car', true, 'Tesla'),
+                'image_path' => 'https://picsum.photos/800/400?random=' . rand(1, 1000),
                 'is_published' => fake()->boolean(80),
                 'published_at' => now()->subDays(rand(0, 30)),
             ]);

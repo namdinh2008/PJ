@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             CarVariantOptionSeeder::class,
             OrderSeeder::class,
             BlogSeeder::class,
+            CarModelImageSeeder::class,
         ]);
     }
 }

@@ -22,6 +22,14 @@ class CarVariantImage extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image_url ?? 'https://via.placeholder.com/400x300/4f46e5/ffffff?text=Image';
+        if ($this->attributes['image_url']) {
+            // Check if it's an external URL (starts with http)
+            if (filter_var($this->attributes['image_url'], FILTER_VALIDATE_URL)) {
+                return $this->attributes['image_url'];
+            }
+            // If it's a local file path, prepend storage path
+            return asset('storage/' . $this->attributes['image_url']);
+        }
+        return 'https://via.placeholder.com/400x300/4f46e5/ffffff?text=Image';
     }
 }

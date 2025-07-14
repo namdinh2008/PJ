@@ -13,7 +13,7 @@ class Blog extends Model
         'admin_id',
         'title',
         'content',
-        'image_url',
+        'image_path',
         'is_published',
         'published_at',
     ];
