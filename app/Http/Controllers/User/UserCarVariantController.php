@@ -10,7 +10,7 @@ class UserCarVariantController extends Controller
 {
     public function show($id)
     {
-        $variant = CarVariant::with('product', 'carModel')->findOrFail($id);
+        $variant = CarVariant::with(['product', 'carModel', 'images', 'colors'])->findOrFail($id);
         return view('user.car_variants.show', compact('variant'));
     }
 }

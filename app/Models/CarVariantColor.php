@@ -23,6 +23,11 @@ class CarVariantColor extends Model
     public function getImageUrlAttribute()
     {
         if ($this->attributes['image_url']) {
+            // Check if it's already a full URL (starts with http or https)
+            if (filter_var($this->attributes['image_url'], FILTER_VALIDATE_URL)) {
+                return $this->attributes['image_url'];
+            }
+            // Otherwise, assume it's a local file path and prepend the storage path
             return asset('storage/' . $this->attributes['image_url']);
         }
         return 'https://via.placeholder.com/100x100/cccccc/ffffff?text=Color';

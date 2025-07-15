@@ -22,7 +22,7 @@ class BlogSeeder extends Seeder
 
             Blog::create([
                 'admin_id' => $admin->id,
-                'title' => fake()->sentence(6, true),
+                'title' => fake()->sentence(5, true),
                 'content' => fake()->paragraphs(3, true),
                 'image_path' => 'https://picsum.photos/800/400?random=' . rand(1, 1000),
                 'is_published' => fake()->boolean(80),

@@ -43,7 +43,7 @@
             <!-- Image Gallery -->
             <div class="space-y-4">
                 <div class="relative">
-                    <img src="{{ $variant->main_image_url }}"
+                    <img src="{{ $variant->image_url }}"
                          id="main-image"
                          class="w-full h-96 object-cover rounded-2xl shadow-lg"
                          alt="{{ $variant->name }}">
@@ -57,14 +57,23 @@
                 <!-- Thumbnail Gallery -->
                 <div class="grid grid-cols-4 gap-4">
                     @foreach($variant->colors as $color)
-                        <img src="{{ $color->image_url ?? $variant->main_image_url }}"
-                             class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition"
+                        <!-- Debug info: {{ $color->image_url }} -->
+                        <img src="{{ $color->image_url }}"
+                             class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition color-thumbnail"
                              onclick="changeMainImage(this.src)"
                              alt="{{ $color->color_name }}">
                     @endforeach
-                    @if($variant->colors->count() < 4)
+                    
+                    @if($variant->images && $variant->images->where('is_main', false)->count() > 0)
+                        @foreach($variant->images->where('is_main', false) as $image)
+                            <img src="{{ $image->image_url }}"
+                                 class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition"
+                                 onclick="changeMainImage(this.src)"
+                                 alt="{{ $variant->name }}">
+                        @endforeach
+                    @elseif($variant->colors->count() < 4)
                         @for($i = $variant->colors->count(); $i < 4; $i++)
-                            <img src="{{ $variant->main_image_url }}"
+                            <img src="{{ $variant->image_url }}"
                                  class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition"
                                  onclick="changeMainImage(this.src)"
                                  alt="{{ $variant->name }}">
@@ -151,9 +160,15 @@
                                 <i class="fas fa-cart-plus"></i>
                                 Thêm vào giỏ hàng
                             </button>
-                            <button type="button"
+                            @php
+                                $isInWishlist = false;
+                                if (auth()->check()) {
+                                    $isInWishlist = \App\Helpers\WishlistHelper::isInWishlist($variant->product->id);
+                                }
+                            @endphp
+                            <button type="button" id="wishlist-btn" data-product-id="{{ $variant->product->id }}"
                                     class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-indigo-500 transition">
-                                <i class="far fa-heart text-xl"></i>
+                                <i class="{{ $isInWishlist ? 'fas text-red-500' : 'far' }} fa-heart text-xl"></i>
                             </button>
                         </div>
                     </form>
@@ -453,6 +468,15 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
 
+        // Check if color is selected when colors are available
+        const colorOptions = document.querySelectorAll('.color-option');
+        const colorInput = document.getElementById('selected-color-id');
+        
+        if (colorOptions.length > 0 && (!colorInput.value || colorInput.value === '')) {
+            showMessage('Vui lòng chọn màu sắc trước khi thêm vào giỏ hàng', 'error');
+            return;
+        }
+
         // Show loading state
         const originalText = addToCartButton.innerHTML;
         addToCartButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
@@ -490,23 +514,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // AJAX request
         const formData = new FormData(form);
+        
         fetch(form.action, {
             method: 'POST',
-            body: formData,
+            body: new URLSearchParams(formData),
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
             }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 showMessage(data.message || 'Đã thêm vào giỏ hàng!', 'success');
-                updateCartCount(data.cart_count);
+                if (typeof updateCartCount === 'function' && data.cart_count !== undefined) {
+                    updateCartCount(data.cart_count);
+                }
             } else {
                 showMessage(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
             }
         })
         .catch(error => {
+            console.error('Error:', error);
             showMessage('Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
         })
         .finally(() => {
@@ -514,6 +544,20 @@ document.addEventListener('DOMContentLoaded', function () {
             addToCartButton.innerHTML = originalText;
             addToCartButton.disabled = false;
         });
+    });
+});
+
+// Check if color images are loading correctly
+document.addEventListener('DOMContentLoaded', function() {
+    const colorThumbnails = document.querySelectorAll('.color-thumbnail');
+    
+    colorThumbnails.forEach(img => {
+        img.addEventListener('error', function() {
+            console.error('Failed to load image:', this.src);
+            this.src = 'https://via.placeholder.com/100x100/cccccc/ffffff?text=' + this.alt;
+        });
+        
+        console.log('Color image src:', img.src);
     });
 });
 
@@ -550,28 +594,100 @@ function showMessage(message, type) {
 
 // Update cart count function
 function updateCartCount(count) {
-    const badge = document.getElementById('cart-count-badge');
-    if (badge) {
-        badge.textContent = count;
-        if (count === 0) {
-            badge.style.display = 'none';
-        } else {
-            badge.style.display = 'block';
-        }
-    } else if (count > 0) {
-        const cartIcon = document.getElementById('cart-icon');
+    // Find all cart count badges
+    const badges = document.querySelectorAll('.cart-count');
+    
+    if (badges.length > 0) {
+        // Update all cart count badges on the page
+        badges.forEach(function(badge) {
+            badge.textContent = count;
+            if (count === 0) {
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'flex';
+            }
+        });
+    } else {
+        // If no badge exists, try to find the cart icon in the header
+        const cartIcon = document.querySelector('a[href*="cart"] i.fa-shopping-cart');
         if (cartIcon && cartIcon.parentElement) {
             const newBadge = document.createElement('span');
             newBadge.id = 'cart-count-badge';
-            newBadge.className = 'absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5';
+            newBadge.className = 'absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center cart-count';
             newBadge.textContent = count;
+            cartIcon.parentElement.style.position = 'relative';
             cartIcon.parentElement.appendChild(newBadge);
+        }
+    }
+    
+    // Also try to update the cart count in the header specifically
+    const headerBadge = document.getElementById('cart-count-badge');
+    if (headerBadge) {
+        headerBadge.textContent = count;
+        if (count === 0) {
+            headerBadge.style.display = 'none';
+        } else {
+            headerBadge.style.display = 'flex';
         }
     }
 }
 
 // Use the global updateWishlistCount function from layout
 // No need to redefine it here
+
+// Add wishlist functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistBtn = document.getElementById('wishlist-btn');
+    
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const icon = this.querySelector('i');
+            const isInWishlist = icon.classList.contains('fas');
+            
+            // Determine the URL based on current state
+            const url = isInWishlist 
+                ? '{{ route("wishlist.remove") }}'
+                : '{{ route("wishlist.add") }}';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `product_id=${productId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Toggle icon state
+                    if (isInWishlist) {
+                        icon.classList.remove('fas', 'text-red-500');
+                        icon.classList.add('far');
+                    } else {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas', 'text-red-500');
+                    }
+                    
+                    // Update wishlist count if the function exists
+                    if (typeof updateWishlistCount === 'function' && data.wishlist_count !== undefined) {
+                        updateWishlistCount(data.wishlist_count);
+                    }
+                    
+                    showMessage(data.message || (isInWishlist ? 'Đã xóa khỏi danh sách yêu thích' : 'Đã thêm vào danh sách yêu thích'), 'success');
+                } else {
+                    showMessage(data.message || 'Có lỗi xảy ra', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Có lỗi xảy ra', 'error');
+            });
+        });
+    }
+});
 </script>
 @endpush
 @endsection

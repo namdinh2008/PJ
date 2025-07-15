@@ -47,6 +47,35 @@
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 150ms;
         }
+
+        /* Dropdown wrapper styling */
+        .car-dropdown-wrapper, .profile-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* Custom hover behavior for dropdowns */
+        .car-dropdown-wrapper:hover .car-dropdown-menu,
+        .profile-dropdown-wrapper:hover .profile-dropdown-menu {
+            display: block !important;
+            opacity: 1 !important;
+        }
+        
+        /* Add a dropdown bridge to cover the gap */
+        .dropdown-bridge {
+            position: absolute;
+            height: 10px;
+            width: 100%;
+            top: 100%;
+            left: 0;
+            background-color: transparent;
+        }
+        
+        /* Position the dropdown menu directly below the button */
+        .car-dropdown-menu, .profile-dropdown-menu {
+            margin-top: 0 !important;
+            top: calc(100% + 6px);
+        }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -74,25 +103,28 @@
             <nav class="hidden md:flex space-x-6 lg:space-x-8 font-medium text-sm lg:text-base">
                 @foreach ($navCars as $car)
                 <div class="relative group" data-car-dropdown="{{ $car->id }}">
-                    <button class="px-3 py-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 flex items-center space-x-1">
-                        <span>{{ $car->name }}</span>
-                        <i class="fas fa-chevron-down text-xs opacity-60"></i>
-                    </button>
-                    @if ($car->carModels->count())
-                    <div class="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl hidden z-50 transform opacity-0 transition-all duration-200">
-                        <div class="p-2">
-                            @foreach ($car->carModels as $model)
-                            <a href="{{ route('car_models.show', $model->id) }}"
-                                class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 whitespace-nowrap">
-                                <div class="flex items-center space-x-3">
-                                    <i class="fas fa-car text-blue-500"></i>
-                                    <span>{{ $model->name }}</span>
-                                </div>
-                            </a>
-                            @endforeach
+                    <div class="car-dropdown-wrapper">
+                        <button class="px-3 py-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 flex items-center space-x-1">
+                            <span>{{ $car->name }}</span>
+                            <i class="fas fa-chevron-down text-xs opacity-60"></i>
+                        </button>
+                        <div class="dropdown-bridge"></div>
+                        @if ($car->carModels->count())
+                        <div class="absolute left-0 w-56 bg-white border border-gray-200 rounded-xl shadow-xl hidden z-50 transform opacity-0 transition-all duration-200 car-dropdown-menu">
+                            <div class="p-2">
+                                @foreach ($car->carModels as $model)
+                                <a href="{{ route('car_models.show', $model->id) }}"
+                                    class="block px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 whitespace-nowrap">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-car text-blue-500"></i>
+                                        <span>{{ $model->name }}</span>
+                                    </div>
+                                </a>
+                                @endforeach
+                            </div>
                         </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
                 @endforeach
             </nav>
@@ -105,34 +137,37 @@
                 </a>
                 @else
                 <div class="relative" id="desktop-profile-dropdown-wrapper">
-                    <button id="desktop-profile-dropdown-btn"
-                        class="px-4 py-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 flex items-center space-x-2 focus:outline-none">
-                        <i class="fas fa-user-circle text-gray-500"></i>
-                        <span class="truncate max-w-[100px]">{{ Auth::user()->name }}</span>
-                        <i class="fas fa-chevron-down text-xs opacity-60"></i>
-                    </button>
-                    <div id="desktop-profile-dropdown-menu"
-                        class="absolute right-0 mt-2 min-w-max bg-white border border-gray-200 rounded-xl shadow-xl z-50 hidden text-right">
-                        <div class="p-2">
-                            <a href="{{ route('profile.edit') }}"
-                                class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 whitespace-nowrap">
-                                <i class="fas fa-user-edit mr-2"></i>Hồ sơ
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full text-left px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 whitespace-nowrap">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
-                                </button>
-                            </form>
+                    <div class="profile-dropdown-wrapper">
+                        <button id="desktop-profile-dropdown-btn"
+                            class="px-4 py-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 flex items-center space-x-2 focus:outline-none">
+                            <i class="fas fa-user-circle text-gray-500"></i>
+                            <span class="truncate max-w-[100px]">{{ Auth::user()->name }}</span>
+                            <i class="fas fa-chevron-down text-xs opacity-60"></i>
+                        </button>
+                        <div class="dropdown-bridge"></div>
+                        <div id="desktop-profile-dropdown-menu"
+                            class="absolute right-0 min-w-max bg-white border border-gray-200 rounded-xl shadow-xl z-50 hidden text-right profile-dropdown-menu">
+                            <div class="p-2">
+                                <a href="{{ route('profile.edit') }}"
+                                    class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200 whitespace-nowrap">
+                                    <i class="fas fa-user-edit mr-2"></i>Hồ sơ
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full text-left px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 whitespace-nowrap">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
                 @endguest
 
                 <!-- Wishlist Icon -->
-                <a href="{{ route('wishlist.index') }}" class="relative flex items-center p-2 rounded-lg hover:bg-gray-50 hover:text-red-500 transition-all duration-200">
-                    <i class="fas fa-heart w-6 h-6"></i>
+                <a href="{{ route('wishlist.index') }}" class="relative flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 hover:text-red-500 transition-all duration-200">
+                    <i class="fas fa-heart text-lg"></i>
                     @php
                     $wishlistCount = 0;
                     if (auth()->check()) {
@@ -153,8 +188,8 @@
                 </a>
 
                 <!-- Cart Icon -->
-                <a href="{{ route('cart.index') }}" class="relative flex items-center p-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200">
-                    <i class="fas fa-shopping-cart w-6 h-6"></i>
+                <a href="{{ route('cart.index') }}" class="relative flex items-center justify-center p-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200">
+                    <i class="fas fa-shopping-cart text-lg"></i>
                     @php
                     $cartCount = \App\Models\CartItem::where(function ($q) {
                     if (auth()->check()) {
@@ -339,86 +374,72 @@
             const btn = document.getElementById('desktop-profile-dropdown-btn');
             const menu = document.getElementById('desktop-profile-dropdown-menu');
             const wrapper = document.getElementById('desktop-profile-dropdown-wrapper');
+            const profileDropdownWrapper = wrapper.querySelector('.profile-dropdown-wrapper');
             
-            if (btn && menu && wrapper) {
-                let hideTimeout;
-                
+            if (btn && menu && wrapper && profileDropdownWrapper) {
                 // Show dropdown on click
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    menu.classList.toggle('hidden');
-                });
-                
-                // Hide dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!wrapper.contains(e.target)) {
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                    } else {
                         menu.classList.add('hidden');
                     }
                 });
                 
-                // Improved hover behavior for dropdown
-                wrapper.addEventListener('mouseenter', function() {
-                    clearTimeout(hideTimeout);
-                    menu.classList.remove('hidden');
-                });
-                
-                wrapper.addEventListener('mouseleave', function() {
-                    hideTimeout = setTimeout(() => {
+                // Hide dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!profileDropdownWrapper.contains(e.target)) {
                         menu.classList.add('hidden');
-                    }, 300); // 300ms delay before hiding
+                    }
                 });
                 
-                // Prevent hiding when hovering over the menu
-                menu.addEventListener('mouseenter', function() {
-                    clearTimeout(hideTimeout);
-                });
-                
-                menu.addEventListener('mouseleave', function() {
-                    hideTimeout = setTimeout(() => {
-                        menu.classList.add('hidden');
-                    }, 300); // 300ms delay before hiding
-                });
+                // Hover behavior is handled by CSS
             }
             
             // Car models dropdowns
             const carDropdowns = document.querySelectorAll('[data-car-dropdown]');
             carDropdowns.forEach(dropdown => {
+                const wrapper = dropdown.querySelector('.car-dropdown-wrapper');
                 const button = dropdown.querySelector('button');
-                const menu = dropdown.querySelector('div[class*="absolute"]');
-                let hideTimeout;
+                const menu = dropdown.querySelector('.car-dropdown-menu');
                 
-                if (button && menu) {
-                    // Show dropdown on hover
-                    dropdown.addEventListener('mouseenter', function() {
-                        clearTimeout(hideTimeout);
-                        menu.classList.remove('hidden');
-                        setTimeout(() => {
-                            menu.classList.remove('opacity-0');
-                        }, 10);
-                    });
+                if (button && menu && wrapper) {
+                    // Show dropdown on hover - handled by CSS now
                     
-                    // Hide dropdown with delay
-                    dropdown.addEventListener('mouseleave', function() {
-                        hideTimeout = setTimeout(() => {
+                    // For click events on mobile
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Close other dropdowns
+                        document.querySelectorAll('.car-dropdown-menu').forEach(m => {
+                            if (m !== menu) {
+                                m.classList.add('hidden');
+                                m.classList.add('opacity-0');
+                            }
+                        });
+                        
+                        // Toggle current dropdown
+                        if (menu.classList.contains('hidden')) {
+                            menu.classList.remove('hidden');
+                            setTimeout(() => {
+                                menu.classList.remove('opacity-0');
+                            }, 10);
+                        } else {
                             menu.classList.add('opacity-0');
                             setTimeout(() => {
                                 menu.classList.add('hidden');
-                            }, 200);
-                        }, 300); // 300ms delay before hiding
+                            }, 100);
+                        }
                     });
                     
-                    // Prevent hiding when hovering over the menu
-                    menu.addEventListener('mouseenter', function() {
-                        clearTimeout(hideTimeout);
-                    });
-                    
-                    menu.addEventListener('mouseleave', function() {
-                        hideTimeout = setTimeout(() => {
+                    // Hide dropdown when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!wrapper.contains(e.target)) {
                             menu.classList.add('opacity-0');
-                            setTimeout(() => {
-                                menu.classList.add('hidden');
-                            }, 200);
-                        }, 300); // 300ms delay before hiding
+                            menu.classList.add('hidden');
+                        }
                     });
                 }
             });
