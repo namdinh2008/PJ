@@ -119,8 +119,8 @@
                                     onclick="selectColor({{ $color->id }}, '{{ $color->color_name }}')"
                                     class="color-option flex flex-col items-center p-3 border-2 border-gray-200 rounded-lg hover:border-indigo-500 transition"
                                     data-color-id="{{ $color->id }}">
-                                <div class="w-8 h-8 rounded-full bg-{{ strtolower($color->color_name) }}-500 mb-2"></div>
-                                <span class="text-sm text-gray-700">{{ $color->color_name }}</span>
+                                {{-- <div class="w-8 rounded-full bg-{{ strtolower($color->color_name) }}-500 mb-2"></div> --}}
+                                <span class="text-sm text-gray-700 font-bold">{{ $color->color_name }}</span>
                             </button>
                         @endforeach
                     </div>
@@ -134,11 +134,11 @@
                         <input type="hidden" name="product_id" value="{{ $variant->product->id }}">
                         <input type="hidden" name="color_id" value="" id="selected-color-id">
                         <!-- Debug info -->
-                        <div class="text-xs text-gray-500 mb-2">
+                        {{-- <div class="text-xs text-gray-500 mb-2">
                             Debug: Product ID = {{ $variant->product->id ?? 'NULL' }}, 
                             Variant ID = {{ $variant->id }}, 
                             Product Name = {{ $variant->product->name ?? 'NULL' }}
-                        </div>
+                        </div> --}}
                         
                         <div class="flex items-center gap-4">
                             <label class="text-lg font-semibold text-gray-900">Số lượng:</label>

@@ -278,89 +278,77 @@
         @yield('content')
     </main>
     {{-- Footer --}}
-    <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-300 py-16 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8">
-            <!-- Main Footer Content -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12">
-                <div>
-                    <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-car text-white text-sm"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-white font-bold text-lg">AutoLux</h3>
-                            <p class="text-xs text-gray-400">Premium Auto Showroom</p>
-                        </div>
+    <footer class="bg-gray-950 text-gray-300 py-12">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-16">
+            <div class="md:col-span-1">
+                <div class="flex items-center mb-5 space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-700 to-indigo-800 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-car text-white text-lg"></i>
                     </div>
-                    <p class="text-sm text-gray-400 mb-4">
-                        Chuyên cung cấp các dòng xe cao cấp với chất lượng dịch vụ tốt nhất.
-                    </p>
-                    <div class="flex space-x-4 text-gray-400">
-                        <a class="hover:text-blue-400 transition-colors" href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a class="hover:text-blue-400 transition-colors" href="#"><i class="fab fa-instagram"></i></a>
-                        <a class="hover:text-blue-400 transition-colors" href="#"><i class="fab fa-youtube"></i></a>
-                        <a class="hover:text-blue-400 transition-colors" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <div>
+                        <h3 class="text-white font-extrabold text-xl leading-tight">AutoLux</h3>
+                        <p class="text-xs text-blue-300 font-medium tracking-wide opacity-80">Premium Auto Showroom</p>
                     </div>
                 </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-4 flex items-center">
-                        <i class="fas fa-car-side mr-2 text-blue-400"></i>
-                        Dòng xe
-                    </h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Sedan</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">SUV</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Luxury</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Sports</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Electric</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-4 flex items-center">
-                        <i class="fas fa-tools mr-2 text-blue-400"></i>
-                        Dịch vụ
-                    </h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Mua xe</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Thuê xe</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Bảo hành</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Bảo dưỡng</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Tư vấn</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-semibold mb-4 flex items-center">
-                        <i class="fas fa-info-circle mr-2 text-blue-400"></i>
-                        Thông tin
-                    </h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Về chúng tôi</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Liên hệ</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Chính sách</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Điều khoản</a></li>
-                        <li><a class="hover:text-blue-400 transition-colors" href="#">Tuyển dụng</a></li>
-                    </ul>
-                </div>
+                <p class="text-sm text-gray-400 leading-relaxed max-w-sm">
+                    Khám phá bộ sưu tập xe sang trọng và trải nghiệm dịch vụ đẳng cấp tại showroom của chúng tôi.
+                </p>
             </div>
-            
-            <!-- Bottom Footer -->
-            <div class="border-t border-gray-700 pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    <div class="text-sm text-gray-400">
-                        © 2024 AutoLux. Tất cả quyền được bảo lưu.
-                    </div>
-                    <div class="flex space-x-6 text-sm">
-                        <a class="hover:text-blue-400 transition-colors" href="#">Chính sách bảo mật</a>
-                        <a class="hover:text-blue-400 transition-colors" href="#">Điều khoản sử dụng</a>
-                        <a class="hover:text-blue-400 transition-colors" href="#">Sitemap</a>
-                    </div>
+
+            <div class="md:col-span-1">
+                <h4 class="text-white font-bold mb-4 text-base tracking-wide">Thông tin</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Về chúng tôi</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Liên hệ</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Câu hỏi thường gặp</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Tuyển dụng</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-1">
+                <h4 class="text-white font-bold mb-4 text-base tracking-wide">Dịch vụ</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Mua bán xe</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Thuê xe</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Bảo dưỡng</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-blue-400 transition duration-300 ease-in-out">Tài chính</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-1">
+                <h4 class="text-white font-bold mb-4 text-base tracking-wide">Kết nối với chúng tôi</h4>
+                <div class="flex space-x-5 text-gray-400 text-xl mb-6">
+                    <a href="#" class="hover:text-blue-400 transition duration-300 ease-in-out transform hover:scale-110"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-pink-500 transition duration-300 ease-in-out transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-red-500 transition duration-300 ease-in-out transform hover:scale-110"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="hover:text-blue-500 transition duration-300 ease-in-out transform hover:scale-110"><i class="fab fa-linkedin-in"></i></a>
                 </div>
+                <h4 class="text-white font-bold mb-3 text-base tracking-wide">Đăng ký nhận tin</h4>
+                <form id="newsletter-form" class="flex">
+                    <input 
+                        type="email" 
+                        name="newsletter_email"
+                        placeholder="Nhập email của bạn" 
+                        class="flex-grow p-3 rounded-l-lg bg-gray-800 text-gray-300 placeholder-gray-500 border border-gray-700 text-sm transition-all duration-300 
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-80 focus:border-blue-400 focus:border-2" 
+                        required
+                    />
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-r-lg transition duration-300 ease-in-out text-sm font-semibold border border-blue-700 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-80">Gửi</button>
+                </form>
             </div>
         </div>
-    </footer>
+
+        <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+            <span>© 2024 AutoLux. Tất cả quyền được bảo lưu.</span>
+            <div class="flex space-x-8 mt-5 md:mt-0">
+                <a href="#" class="hover:text-blue-400 transition duration-300 ease-in-out">Chính sách bảo mật</a>
+                <a href="#" class="hover:text-blue-400 transition duration-300 ease-in-out">Điều khoản dịch vụ</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
     @stack('scripts')
     <script>
         const menuBtn = document.getElementById('menu-btn');
@@ -647,6 +635,39 @@
                     // Silently fail, don't show error for count updates
                 }
             });
+        });
+
+        // Handle newsletter form submission
+        $(document).on('submit', '#newsletter-form', function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            var $button = $form.find('button[type="submit"]');
+            var $input = $form.find('input[name="newsletter_email"]');
+            var email = $input.val();
+            var originalText = $button.html();
+            
+            // Validate email
+            if (!email || !email.includes('@')) {
+                showMessage('Vui lòng nhập email hợp lệ', 'error');
+                return false;
+            }
+            
+            // Show loading state
+            $button.html('<i class="fas fa-spinner fa-spin"></i>');
+            $button.prop('disabled', true);
+            
+            // Simulate an AJAX call (replace with actual endpoint when available)
+            setTimeout(function() {
+                // Success response (this would be an actual AJAX call in production)
+                showMessage('Cảm ơn bạn đã đăng ký nhận tin!', 'success');
+                $input.val(''); // Clear the input
+                
+                // Restore button state
+                $button.html(originalText);
+                $button.prop('disabled', false);
+            }, 1000);
+            
+            return false;
         });
     </script>
 </body>
