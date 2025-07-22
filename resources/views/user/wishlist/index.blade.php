@@ -19,6 +19,13 @@
             <!-- Wishlist Items -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 @foreach($wishlistItems as $item)
+                    @php
+                        // Get the appropriate image URL
+                        $imageUrl = $item->product->image_url;
+                        if ($item->product->product_type === 'car_variant' && $item->product->carVariant) {
+                            $imageUrl = $item->product->carVariant->image_url;
+                        }
+                    @endphp
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 group relative transform hover:-translate-y-2">
                         <!-- Remove from wishlist button -->
                         <div class="absolute top-4 right-4 z-10">
@@ -31,17 +38,29 @@
 
                         <!-- Product Image -->
                         <div class="relative overflow-hidden">
-                            <img src="{{ $item->product->image_url }}" 
-                                 class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" 
-                                 alt="{{ $item->product->name }}">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                            @php
+                                $productLink = '#';
+                                if ($item->product->product_type === 'car_variant' && $item->product->carVariant) {
+                                    $productLink = route('car_variants.show', $item->product->carVariant->id);
+                                } elseif ($item->product->product_type === 'accessory' && $item->product->accessory) {
+                                    $productLink = route('accessories.show', $item->product->accessory->id);
+                                }
+                            @endphp
+                            <a href="{{ $productLink }}" class="block">
+                                <img src="{{ $imageUrl ?? asset('images/default-product.jpg') }}" 
+                                     class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" 
+                                     alt="{{ $item->product->name }}">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                            </a>
                         </div>
 
                         <!-- Product Info -->
                         <div class="p-6">
-                            <h3 class="font-bold text-xl text-gray-800 mb-3 group-hover:text-indigo-600 transition duration-300">
-                                {{ $item->product->name }}
-                            </h3>
+                            <a href="{{ $productLink }}" class="block">
+                                <h3 class="font-bold text-xl text-gray-800 mb-3 group-hover:text-indigo-600 transition duration-300 hover:text-indigo-600">
+                                    {{ $item->product->name }}
+                                </h3>
+                            </a>
                             
                             <p class="text-gray-600 mb-4 line-clamp-2 text-sm leading-relaxed">
                                 {{ Str::limit($item->product->description ?? 'Sản phẩm chất lượng cao', 100) }}

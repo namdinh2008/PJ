@@ -22,10 +22,10 @@ class CartController extends Controller
             else $q->where('session_id', $sessionId);
         })->with(['product', 'color'])->get();
 
-        // Load carVariant colors separately for products that are car variants
+        // Load carVariant with images and colors for products that are car variants
         foreach ($cartItems as $item) {
             if ($item->product->product_type === 'car_variant') {
-                $item->product->load('carVariant.colors');
+                $item->product->load('carVariant.colors', 'carVariant.images');
             }
         }
 
@@ -36,7 +36,7 @@ class CartController extends Controller
     {
         // Debug: Log the request data
         Log::info('Cart add request:', $request->all());
-        
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'color_id' => 'nullable|exists:car_variant_colors,id',
@@ -96,7 +96,7 @@ class CartController extends Controller
     {
         // Debug: Log the request data
         Log::info('Cart update request:', $request->all());
-        
+
         try {
             $request->validate([
                 'quantity' => 'nullable|integer|min:1',
@@ -116,7 +116,7 @@ class CartController extends Controller
             Log::info('Update data:', $updateData);
             $cartItem->update($updateData);
             Log::info('Cart item updated successfully');
-            
+
             // Reload the cart item with relationships
             $cartItem->load(['product', 'color']);
             Log::info('Cart item reloaded with relationships');
@@ -128,10 +128,10 @@ class CartController extends Controller
                     if ($userId) $q->where('user_id', $userId);
                     else $q->where('session_id', $sessionId);
                 })->sum('quantity');
-                
+
                 $itemTotal = $cartItem->product->price * $cartItem->quantity;
                 $colorName = $cartItem->color ? $cartItem->color->color_name : null;
-                
+
                 $response = [
                     'success' => true,
                     'cart_count' => $cartCount,
@@ -141,10 +141,10 @@ class CartController extends Controller
                     'color_name' => $colorName,
                     'message' => $request->has('color_id') ? 'Cập nhật màu sắc thành công!' : 'Cập nhật số lượng thành công!'
                 ];
-                
+
                 // Debug: Log the response
                 Log::info('Cart update response:', $response);
-                
+
                 return response()->json($response, 200, ['Content-Type' => 'application/json']);
             }
             return back()->with('success', 'Cập nhật thành công!');
@@ -153,14 +153,14 @@ class CartController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Có lỗi xảy ra khi cập nhật: ' . $e->getMessage()
                 ], 500);
             }
-            
+
             return back()->with('error', 'Có lỗi xảy ra khi cập nhật: ' . $e->getMessage());
         }
     }
@@ -168,7 +168,7 @@ class CartController extends Controller
     public function remove(CartItem $cartItem)
     {
         $cartItem->delete();
-        
+
         if (request()->ajax()) {
             $userId = Auth::check() ? Auth::user()->id : null;
             $sessionId = session()->getId();
@@ -176,14 +176,14 @@ class CartController extends Controller
                 if ($userId) $q->where('user_id', $userId);
                 else $q->where('session_id', $sessionId);
             })->sum('quantity');
-            
+
             return response()->json([
                 'success' => true,
                 'cart_count' => $cartCount,
                 'message' => 'Đã xóa sản phẩm khỏi giỏ hàng!'
             ]);
         }
-        
+
         return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
     }
 
@@ -195,7 +195,7 @@ class CartController extends Controller
             if ($userId) $q->where('user_id', $userId);
             else $q->where('session_id', $sessionId);
         })->delete();
-        
+
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -203,7 +203,7 @@ class CartController extends Controller
                 'message' => 'Đã xóa toàn bộ giỏ hàng!'
             ]);
         }
-        
+
         return back()->with('success', 'Đã xóa toàn bộ giỏ hàng!');
     }
 
@@ -211,7 +211,7 @@ class CartController extends Controller
     {
         $userId = Auth::check() ? Auth::user()->id : null;
         $sessionId = session()->getId();
-        
+
         $cartCount = CartItem::where(function ($q) use ($userId, $sessionId) {
             if ($userId) $q->where('user_id', $userId);
             else $q->where('session_id', $sessionId);

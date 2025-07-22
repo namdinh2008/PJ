@@ -39,9 +39,15 @@
         <div class="flex flex-col lg:flex-row gap-8">
             <div class="flex-1 space-y-6">
                 @foreach($cartItems as $item)
-                    @php $itemTotal = $item->product->price * $item->quantity; @endphp
+                    @php 
+                        $itemTotal = $item->product->price * $item->quantity; 
+                        $imageUrl = $item->product->image_url;
+                        if ($item->product->product_type === 'car_variant' && $item->product->carVariant) {
+                            $imageUrl = $item->product->carVariant->image_url;
+                        }
+                    @endphp
                     <div class="flex flex-col sm:flex-row items-center bg-white rounded-2xl shadow-lg p-6 gap-6 group hover:shadow-xl transition duration-300 relative cart-item-row transform hover:-translate-y-1" data-id="{{ $item->id }}">
-                        <img src="{{ $item->product->image_url ?? asset('images/default-product.jpg') }}" class="w-28 h-28 object-contain rounded-xl bg-gray-100 border border-gray-200" alt="{{ $item->product->name }}">
+                        <img src="{{ $imageUrl ?? asset('images/default-product.jpg') }}" class="w-28 h-28 object-contain rounded-xl bg-gray-100 border border-gray-200" alt="{{ $item->product->name }}">
                         <div class="flex-1 w-full">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
                                 <div class="flex-1">

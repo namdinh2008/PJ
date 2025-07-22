@@ -21,13 +21,32 @@ class WishlistController extends Controller
             $wishlistItems = Wishlist::where('user_id', Auth::id())
                 ->with(['product'])
                 ->get();
+
+            // Load carVariant with images for products that are car variants
+            foreach ($wishlistItems as $item) {
+                if ($item->product->product_type === 'car_variant') {
+                    $item->product->load('carVariant.images');
+                } elseif ($item->product->product_type === 'accessory') {
+                    $item->product->load('accessory');
+                }
+            }
         } else {
             // For guest users, get from session
             $wishlistIds = session()->get('wishlist', []);
             $wishlistItems = collect();
-            
+
             if (!empty($wishlistIds)) {
                 $products = Product::whereIn('id', $wishlistIds)->get();
+
+                // Load carVariant with images for car variant products
+                foreach ($products as $product) {
+                    if ($product->product_type === 'car_variant') {
+                        $product->load('carVariant.images');
+                    } elseif ($product->product_type === 'accessory') {
+                        $product->load('accessory');
+                    }
+                }
+
                 $wishlistItems = $products->map(function ($product) {
                     return (object) [
                         'id' => 'session_' . $product->id,
@@ -68,7 +87,7 @@ class WishlistController extends Controller
             } else {
                 // For guest users, save to session
                 $wishlist = session()->get('wishlist', []);
-                
+
                 if (!in_array($productId, $wishlist)) {
                     $wishlist[] = $productId;
                     session()->put('wishlist', $wishlist);
@@ -84,10 +103,9 @@ class WishlistController extends Controller
             }
 
             return redirect()->back()->with('success', 'Đã thêm vào yêu thích!');
-
         } catch (\Exception $e) {
             Log::error('Error adding to wishlist:', ['error' => $e->getMessage()]);
-            
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -132,10 +150,9 @@ class WishlistController extends Controller
             }
 
             return redirect()->back()->with('success', 'Đã xóa khỏi yêu thích!');
-
         } catch (\Exception $e) {
             Log::error('Error removing from wishlist:', ['error' => $e->getMessage()]);
-            
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -170,10 +187,9 @@ class WishlistController extends Controller
             }
 
             return redirect()->back()->with('success', 'Đã xóa toàn bộ yêu thích!');
-
         } catch (\Exception $e) {
             Log::error('Error clearing wishlist:', ['error' => $e->getMessage()]);
-            
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -239,7 +255,7 @@ class WishlistController extends Controller
     {
         if (Auth::check()) {
             $sessionWishlist = session()->get('wishlist', []);
-            
+
             if (!empty($sessionWishlist)) {
                 foreach ($sessionWishlist as $productId) {
                     $existingWishlist = Wishlist::where('user_id', Auth::id())
@@ -253,7 +269,7 @@ class WishlistController extends Controller
                         ]);
                     }
                 }
-                
+
                 session()->forget('wishlist');
             }
         }

@@ -52,7 +52,7 @@ Route::get('/car-variants/{id}', [UserCarVariantController::class, 'show'])->nam
 Route::get('/accessories/{id}', [UserAccessoryController::class, 'show'])->name('accessories.show');
 
 // Test route for debugging
-Route::get('/test-variant/{id}', function($id) {
+Route::get('/test-variant/{id}', function ($id) {
     $variant = \App\Models\CarVariant::with('product')->find($id);
     if ($variant) {
         echo "Variant: " . $variant->name . "<br>";
@@ -64,15 +64,15 @@ Route::get('/test-variant/{id}', function($id) {
 });
 
 // Test wishlist route
-Route::get('/test-wishlist', function() {
+Route::get('/test-wishlist', function () {
     try {
         $wishlist = new \App\Models\Wishlist();
         echo "Wishlist model created successfully<br>";
         echo "Table name: " . $wishlist->getTable() . "<br>";
-        
+
         $count = \App\Models\Wishlist::count();
         echo "Wishlist count: " . $count . "<br>";
-        
+
         echo "Wishlist table exists and is working!";
     } catch (\Exception $e) {
         echo "Error: " . $e->getMessage();

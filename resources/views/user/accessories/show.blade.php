@@ -112,9 +112,16 @@
                                 <i class="fas fa-cart-plus"></i>
                                 Thêm vào giỏ hàng
                             </button>
+                            @php
+                                $isInWishlist = false;
+                                if (auth()->check()) {
+                                    $isInWishlist = \App\Helpers\WishlistHelper::isInWishlist($accessory->product->id);
+                                }
+                            @endphp
                             <button type="button"
-                                    class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-green-500 transition">
-                                <i class="far fa-heart text-xl"></i>
+                                    class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-green-500 transition"
+                                    data-product-id="{{ $accessory->product->id }}">
+                                <i class="{{ $isInWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart' }} text-lg"></i>
                             </button>
                         </div>
                     </form>
@@ -440,7 +447,8 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest'
             }
         })
         .then(response => response.json())
@@ -515,6 +523,72 @@ function updateCartCount(count) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistBtn = document.querySelector('button[data-product-id]');
+    console.log('Wishlist button found:', wishlistBtn);
+    
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function() {
+            console.log('Wishlist button clicked');
+            const productId = this.getAttribute('data-product-id');
+            const icon = this.querySelector('i');
+            const isInWishlist = icon.classList.contains('fas');
+            
+            console.log('Product ID:', productId);
+            console.log('Is in wishlist:', isInWishlist);
+            
+            // Determine the URL based on current state
+            const url = isInWishlist 
+                ? '{{ route("wishlist.remove") }}'
+                : '{{ route("wishlist.add") }}';
+            
+            console.log('Request URL:', url);
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `product_id=${productId}`
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    // Toggle icon state
+                    if (isInWishlist) {
+                        icon.classList.remove('fas', 'text-red-500');
+                        icon.classList.add('far');
+                    } else {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas', 'text-red-500');
+                    }
+                    
+                    // Update wishlist count if the function exists
+                    if (typeof updateWishlistCount === 'function' && data.wishlist_count !== undefined) {
+                        updateWishlistCount(data.wishlist_count);
+                    }
+                    
+                    showMessage(data.message || (isInWishlist ? 'Đã xóa khỏi danh sách yêu thích' : 'Đã thêm vào danh sách yêu thích'), 'success');
+                } else {
+                    console.error('Request failed:', data.message);
+                    showMessage(data.message || 'Có lỗi xảy ra', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Có lỗi xảy ra', 'error');
+            });
+        });
+    }
+
+});
 
 // Use the global updateWishlistCount function from layout
 // No need to redefine it here

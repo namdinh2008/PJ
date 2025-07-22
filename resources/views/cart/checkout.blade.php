@@ -26,8 +26,15 @@
                     </h3>
                     <div class="space-y-4">
                         @foreach($cartItems as $item)
+                        @php 
+                        $itemTotal = $item->product->price * $item->quantity; 
+                        $imageUrl = $item->product->image_url;
+                        if ($item->product->product_type === 'car_variant' && $item->product->carVariant) {
+                            $imageUrl = $item->product->carVariant->image_url;
+                        }
+                    @endphp
                         <div class="flex items-center gap-4 p-4 border rounded-lg">
-                            <img src="{{ $item->product->image_url }}"
+                            <img src="{{ $imageUrl }}"
                                 class="w-20 h-20 object-cover rounded-lg bg-gray-100"
                                 alt="{{ $item->product->name }}">
                             <div class="flex-1">
