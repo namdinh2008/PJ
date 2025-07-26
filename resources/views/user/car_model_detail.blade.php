@@ -3,6 +3,11 @@
 @section('title', $carModel->name . ' - AutoLux')
 
 @section('content')
+@if(request()->has('success'))
+<div class="mb-8 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center">
+    <i class="fas fa-check-circle mr-2"></i> Yêu cầu đặt hàng của bạn đã được gửi thành công!
+</div>
+@endif
 <!-- Hero Section -->
 <section class="relative w-full h-screen overflow-hidden">
     <!-- Background Video/Image -->
@@ -378,9 +383,7 @@
             </div>
             
             <div class="bg-white rounded-3xl shadow-3xl p-10">
-                <form action="#" class="space-y-8" method="POST" novalidate>
-                    @csrf
-                    
+                <form class="space-y-8" method="GET" novalidate>
                     <!-- Personal Information -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="group">
@@ -430,7 +433,12 @@
                             </label>
                             <select class="w-full rounded-2xl border-2 border-gray-200 px-6 py-4 text-lg focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 group-hover:border-blue-300 appearance-none bg-white"
                                 id="color" name="color" required>
-                                <option value="">-- Chọn màu --</option>
+                                <option value="">-- Chọn màu sắc --</option>
+                                @foreach($variants as $variant)
+                                    @foreach($variant->colors as $color)
+                                        <option value="{{ $color->id }}">{{ $color->color_name }}</option>
+                                    @endforeach
+                                @endforeach
                             </select>
                         </div>
                     </div>

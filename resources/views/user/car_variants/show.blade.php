@@ -394,20 +394,72 @@
         </div>
 
         <!-- Related Products -->
-        <div class="mt-16">
-            <h3 class="text-2xl font-bold text-gray-900 mb-8">Sản phẩm liên quan</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @for($i = 1; $i <= 4; $i++)
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition">
-                        <img src="https://via.placeholder.com/300x200/4f46e5/ffffff?text=Sản+phẩm+{{ $i }}" 
-                             class="w-full h-48 object-cover" alt="Sản phẩm {{ $i }}">
-                        <div class="p-4">
-                            <h4 class="font-semibold text-gray-900 mb-2">Sản phẩm liên quan {{ $i }}</h4>
-                            <p class="text-indigo-600 font-bold">{{ number_format(rand(1000000, 5000000)) }} đ</p>
+        <div id="featured" class="py-20 bg-gradient-to-br from-gray-50 to-indigo-50">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-4">
+                <i class="fas fa-star text-yellow-500 mr-3"></i>Sản phẩm liên quan
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Những mẫu xe tương tự bạn có thể quan tâm</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            @if(isset($relatedVariants) && $relatedVariants->count() > 0)
+                @foreach ($relatedVariants as $item)
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 group relative transform hover:-translate-y-2">
+                @if($item->product)
+                <div class="absolute top-4 right-4 z-10">
+                    @php
+                        $isInWishlist = \App\Helpers\WishlistHelper::isInWishlist($item->product->id);
+                    @endphp
+                    <button class="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-red-500 hover:text-white transition duration-300 shadow-lg wishlist-btn"
+                            data-product-id="{{ $item->product->id }}">
+                        <i class="{{ $isInWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart' }} text-lg"></i>
+                    </button>
+                </div>
+                @endif
+                <a href="{{ route('car_variants.show', $item->id) }}" class="block hover:no-underline text-gray-800">
+                    <div class="relative overflow-hidden">
+                        <img src="{{ $item->image_url }}"
+                            class="w-full h-56 object-cover group-hover:scale-110 transition duration-500"
+                            alt="{{ $item->name }}" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl text-gray-800 mb-3 group-hover:text-indigo-600 transition">{{ $item->name }}</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2 text-sm leading-relaxed">{{ Str::limit($item->description, 100) }}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-indigo-600">{{ $item->product ? number_format($item->product->price) : '0' }} đ</span>
+                            <div class="flex items-center text-yellow-500">
+                                <i class="fas fa-star text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1">4.8</span>
+                            </div>
                         </div>
                     </div>
-                @endfor
+                </a>
+                @if($item->product)
+                <div class="px-6 pb-6">
+                    <form method="POST" action="{{ route('cart.add') }}" class="related-product-form">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $item->product->id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit"
+                            class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-300 flex items-center justify-center gap-2 shadow-lg">
+                            <i class="fas fa-cart-plus"></i>
+                            Thêm vào giỏ hàng
+                        </button>
+                    </form>
+                </div>
+                @endif
             </div>
+            @endforeach
+            @else
+                <div class="col-span-full text-center py-8">
+                    <div class="text-gray-500 text-lg">
+                        <i class="fas fa-car text-4xl mb-4 block"></i>
+                        Không có sản phẩm liên quan
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -687,6 +739,109 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Handle add to cart for related products
+    const relatedProductForms = document.querySelectorAll('.related-product-form');
+    
+    relatedProductForms.forEach(form => {
+        // Remove any existing event listeners
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        
+        newForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang thêm...';
+            button.disabled = true;
+            
+            // AJAX request
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message || 'Đã thêm vào giỏ hàng!', 'success');
+                    if (typeof updateCartCount === 'function' && data.cart_count !== undefined) {
+                        updateCartCount(data.cart_count);
+                    }
+                } else {
+                    showMessage(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        });
+    });
+    
+    // Handle wishlist for related products
+    const relatedWishlistBtns = document.querySelectorAll('.wishlist-btn');
+    
+    relatedWishlistBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const icon = this.querySelector('i');
+            const isInWishlist = icon.classList.contains('fas');
+            
+            const url = isInWishlist 
+                ? '{{ route("wishlist.remove") }}'
+                : '{{ route("wishlist.add") }}';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `product_id=${productId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Toggle icon state
+                    if (isInWishlist) {
+                        icon.classList.remove('fas', 'text-red-500');
+                        icon.classList.add('far');
+                    } else {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas', 'text-red-500');
+                    }
+                    
+                    if (typeof updateWishlistCount === 'function' && data.wishlist_count !== undefined) {
+                        updateWishlistCount(data.wishlist_count);
+                    }
+                    
+                    showMessage(data.message || (isInWishlist ? 'Đã xóa khỏi danh sách yêu thích' : 'Đã thêm vào danh sách yêu thích'), 'success');
+                } else {
+                    showMessage(data.message || 'Có lỗi xảy ra', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Có lỗi xảy ra', 'error');
+            });
+        });
+    });
 });
 </script>
 @endpush

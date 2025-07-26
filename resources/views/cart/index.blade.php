@@ -216,7 +216,7 @@ function getColorHex(colorName) {
     };
     
     const normalizedName = colorName.trim();
-    return colorMap[normalizedName] || '#CCCCCC'; // Default gray if not found
+    return colorMap[normalizedName] || '#CCCCCC';
 }
 
 const qtyInputs = document.querySelectorAll('.cart-qty-input');
