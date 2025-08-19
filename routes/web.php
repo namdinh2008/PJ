@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\IsAdmin;
-
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CarController;
@@ -17,7 +16,6 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AccessoryController;
 use App\Http\Controllers\Admin\OrderLogController;
 
-
 // Public Controllers
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\CartController;
@@ -25,7 +23,11 @@ use App\Http\Controllers\User\UserOrderController;
 use App\Http\Controllers\User\WishlistController;
 use App\Http\Controllers\User\UserCarVariantController;
 use App\Http\Controllers\User\AccessoryController as UserAccessoryController;
+use App\Http\Controllers\User\BlogController as UserBlogController;
 
+// Blog public
+Route::get('/blogs', [UserBlogController::class, 'index'])->name('blogs.index');
+Route::get('/blogs/{slug}', [UserBlogController::class, 'show'])->name('blogs.show');
 
 // --- Trang chủ ---
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -190,8 +192,8 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')->gr
         Route::delete('/delete/{cartitem}', [CartItemController::class, 'destroy'])->name('destroy');
     });
 
-    // Blogs
-    Route::prefix('blogs')->name('blogs.')->group(function () {
+    // Blogs (Admin)
+    Route::prefix('admin/blogs')->name('admin.blogs.')->group(function () {
         Route::get('/', [BlogController::class, 'index'])->name('index');
         Route::get('/create', [BlogController::class, 'create'])->name('create');
         Route::post('/store', [BlogController::class, 'store'])->name('store');

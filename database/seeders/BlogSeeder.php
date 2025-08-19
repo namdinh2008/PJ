@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Blog;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class BlogSeeder extends Seeder
 {
@@ -19,10 +20,11 @@ class BlogSeeder extends Seeder
 
         for ($i = 0; $i < 10; $i++) {
             $admin = $adminUsers->random();
-
+            $title = fake()->sentence(5, true);
             Blog::create([
                 'admin_id' => $admin->id,
-                'title' => fake()->sentence(5, true),
+                'title' => $title,
+                'slug' => Str::slug($title) . '-' . uniqid(),
                 'content' => fake()->paragraphs(3, true),
                 'image_path' => 'https://picsum.photos/800/400?random=' . rand(1, 1000),
                 'is_published' => fake()->boolean(80),

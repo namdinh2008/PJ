@@ -48,7 +48,7 @@ use Illuminate\Support\Str;
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">Chúng tôi hợp tác với các hãng xe hàng đầu thế giới để mang đến những sản phẩm chất lượng nhất</p>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-            @foreach ($cars as $car)
+            @foreach ($cars->unique('name') as $car)
             <div class="cursor-pointer group car-brand-logo" data-car-id="{{ $car->id }}">
                 <div class="bg-gray-50 rounded-2xl p-6 hover:bg-indigo-50 transition duration-300 group-hover:shadow-lg">
                     <img src="{{ $car->logo_url }}"
@@ -60,7 +60,7 @@ use Illuminate\Support\Str;
             @endforeach
         </div>
 
-        @foreach ($cars as $car)
+    @foreach ($cars->unique('name') as $car)
         @if($car->carModels->count())
         <div id="models-{{ $car->id }}" class="mt-12 hidden">
             <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8">
@@ -368,7 +368,7 @@ use Illuminate\Support\Str;
                             <i class="fas fa-comment mr-1"></i>
                             <span>5 bình luận</span>
                         </div>
-                        <a href="#" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700 transition duration-300 group-hover:scale-105">
+                        <a href="{{ route('blogs.show', $blog->slug) }}" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700 transition duration-300 group-hover:scale-105">
                             Đọc thêm
                             <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition duration-300"></i>
                         </a>
@@ -379,7 +379,7 @@ use Illuminate\Support\Str;
         </div>
         
         <div class="text-center mt-12">
-            <a href="#" class="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-300 transform hover:scale-105 shadow-lg">
+            <a href="{{ route('blogs.index') }}" class="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-300 transform hover:scale-105 shadow-lg">
                 <i class="fas fa-newspaper mr-2"></i>
                 Xem tất cả tin tức
             </a>

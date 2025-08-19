@@ -11,7 +11,7 @@ class CarModelController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CarModel::with('car');
+        $query = CarModel::with('car')->distinct();
 
         if ($search = $request->input('search')) {
             $query->where('name', 'like', '%' . $search . '%');

@@ -12,7 +12,7 @@ class CarVariantController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CarVariant::with(['carModel', 'product']);
+        $query = CarVariant::with(['carModel', 'product'])->distinct();
 
         if ($request->has('search')) {
             $search = $request->search;

@@ -4,11 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Car;
+use Illuminate\Support\Facades\DB;
 
 class CarSeeder extends Seeder
 {
     public function run(): void
     {
+    // Xóa dữ liệu cũ để tránh lặp (xóa car_models trước, rồi cars)
+    DB::table('car_models')->delete();
+    DB::table('cars')->delete();
         $cars = [
             [
                 'name' => 'Tesla',

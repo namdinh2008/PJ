@@ -33,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($accessories as $accessory)
+                        @foreach($accessories as $accessory)
                             <tr>
                                 <td>{{ $accessory->id }}</td>
                                 <td>{{ $accessory->name }}</td>
@@ -64,11 +64,7 @@
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">Không có phụ kiện nào.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>

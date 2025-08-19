@@ -6,11 +6,19 @@ use Illuminate\Database\Seeder;
 use App\Models\CarModel;
 use App\Models\CarVariant;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class CarVariantSeeder extends Seeder
 {
     public function run(): void
     {
+    // Xóa dữ liệu các bảng con trước, rồi mới xóa car_variants
+    DB::table('car_variant_colors')->delete();
+    DB::table('car_variant_images')->delete();
+    DB::table('car_variant_options')->delete();
+    DB::table('products')->where('product_type', 'car_variant')->delete();
+    DB::table('car_variants')->delete();
+
         $carModels = CarModel::all()->keyBy('name');
 
         $variants = [

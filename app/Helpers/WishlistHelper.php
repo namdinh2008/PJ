@@ -27,6 +27,7 @@ class WishlistHelper
      */
     public static function getWishlistCount()
     {
+        
         if (Auth::check()) {
             return Wishlist::where('user_id', Auth::id())->count();
         } else {

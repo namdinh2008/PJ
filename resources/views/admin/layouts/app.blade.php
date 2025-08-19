@@ -2,14 +2,31 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <title>@yield('title', 'Admin Panel - Showroom')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SB Admin CSS -->
-    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
+    {{-- Chỉ giữ lại 1 bản FontAwesome (CDN mới nhất) để tránh xung đột --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <style>
+        /* Ẩn toàn bộ icon mũi tên trái/phải trên toàn admin (FontAwesome & SVG) */
+        .fa,
+        .fas,
+        .far,
+        .fal,
+        .fab,
+        .fa-chevron-left, .fa-chevron-right, .fa-angle-left, .fa-angle-right,
+        .fa-arrow-left, .fa-arrow-right,
+        svg,
+        [class*="icon-arrow"],
+        [class*="icon-chevron"],
+        [class*="icon-angle"] {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body id="page-top">

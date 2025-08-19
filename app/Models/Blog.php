@@ -12,6 +12,7 @@ class Blog extends Model
     protected $fillable = [
         'admin_id',
         'title',
+        'slug',
         'content',
         'image_path',
         'is_published',

@@ -101,7 +101,7 @@
             </a>
 
             <nav class="hidden md:flex space-x-6 lg:space-x-8 font-medium text-sm lg:text-base">
-                @foreach ($navCars as $car)
+                @foreach ($navCars->unique('name') as $car)
                 <div class="relative group" data-car-dropdown="{{ $car->id }}">
                     <div class="car-dropdown-wrapper">
                         <button class="px-3 py-2 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 flex items-center space-x-1">
@@ -220,7 +220,7 @@
         <nav aria-label="Mobile menu" class="md:hidden bg-white border-t border-gray-200 hidden" id="mobile-menu">
             <div class="px-6 py-6 space-y-6">
                 <!-- Car Models -->
-                @foreach ($navCars as $car)
+                @foreach ($navCars->unique('name') as $car)
                 <div class="space-y-3">
                     <h3 class="text-lg font-bold text-gray-900 flex items-center space-x-2">
                         <i class="fas fa-car text-blue-500"></i>

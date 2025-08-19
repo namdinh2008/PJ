@@ -10,8 +10,9 @@ class CarVariantOptionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Giả sử bạn có bảng car_variant_options (nếu chưa có, cần tạo migration)
-        // Ví dụ seed cho mỗi variant 2 option
+        // Xóa toàn bộ dữ liệu cũ để tránh lặp
+        DB::table('car_variant_options')->truncate();
+
         $variants = CarVariant::all();
         foreach ($variants as $variant) {
             DB::table('car_variant_options')->insert([
