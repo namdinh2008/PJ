@@ -347,21 +347,63 @@
         </div>
 
         <!-- Related Products -->
-        <div class="mt-16">
-            <h3 class="text-2xl font-bold text-gray-900 mb-8">Phụ kiện liên quan</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                @for($i = 1; $i <= 4; $i++)
-                    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition">
-                        <img src="https://via.placeholder.com/300x200/10b981/ffffff?text=Phụ+kiện+{{ $i }}" 
-                             class="w-full h-48 object-cover" alt="Phụ kiện {{ $i }}">
-                        <div class="p-4">
-                            <h4 class="font-semibold text-gray-900 mb-2">Phụ kiện liên quan {{ $i }}</h4>
-                            <p class="text-green-600 font-bold">{{ number_format(rand(500000, 2000000)) }} đ</p>
-                        </div>
-                    </div>
-                @endfor
-            </div>
+        <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-4">
+                <i class="fas fa-tools text-indigo-600 mr-3"></i>Phụ kiện khác
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Phụ kiện chất lượng cao, bạn có thể tham khảo thêm.</p>
         </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            @foreach ($accessories as $item)
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 group relative transform hover:-translate-y-2">
+                    @if($item->product)
+                    <div class="absolute top-4 right-4 z-10">
+                        @php
+                            $isInWishlist = \App\Helpers\WishlistHelper::isInWishlist($item->product->id);
+                        @endphp
+                        <button class="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-red-500 hover:text-white transition duration-300 shadow-lg wishlist-btn"
+                                data-product-id="{{ $item->product->id }}">
+                            <i class="{{ $isInWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart' }} text-lg"></i>
+                        </button>
+                    </div>
+                    @endif
+                    <a href="{{ route('accessories.show', $item->id) }}" class="block hover:no-underline text-gray-800">
+                        <div class="relative overflow-hidden">
+                            <img src="{{ $item->image_path }}" 
+                                 class="w-full h-56 object-cover group-hover:scale-110 transition duration-500" 
+                                 alt="{{ $item->name }}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-bold text-xl text-gray-800 mb-3 group-hover:text-indigo-600 transition">{{ $item->name }}</h3>
+                            <p class="text-gray-600 mb-4 line-clamp-2 text-sm leading-relaxed">{{ $item->description }}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl font-bold text-indigo-600">{{ $item->product ? number_format($item->product->price) : '0' }} đ</span>
+                                <div class="flex items-center text-yellow-500">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <span class="text-sm text-gray-600 ml-1">4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    @if($item->product)
+                    <div class="px-6 pb-6">
+                        <form action="{{ route('cart.add') }}" method="POST" class="add-to-cart-form">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $item->product->id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-300 flex items-center justify-center gap-2 shadow-lg">
+                                <i class="fas fa-cart-plus"></i>
+                                Thêm vào giỏ hàng
+                            </button>
+                        </form>
+                    </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
     </div>
 </div>
 
@@ -525,26 +567,14 @@ function updateCartCount(count) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const wishlistBtn = document.querySelector('button[data-product-id]');
-    console.log('Wishlist button found:', wishlistBtn);
-    
-    if (wishlistBtn) {
+    document.querySelectorAll('button[data-product-id]').forEach(function(wishlistBtn) {
         wishlistBtn.addEventListener('click', function() {
-            console.log('Wishlist button clicked');
             const productId = this.getAttribute('data-product-id');
             const icon = this.querySelector('i');
             const isInWishlist = icon.classList.contains('fas');
-            
-            console.log('Product ID:', productId);
-            console.log('Is in wishlist:', isInWishlist);
-            
-            // Determine the URL based on current state
             const url = isInWishlist 
                 ? '{{ route("wishlist.remove") }}'
                 : '{{ route("wishlist.add") }}';
-            
-            console.log('Request URL:', url);
-            
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -554,12 +584,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: `product_id=${productId}`
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Response data:', data);
                 if (data.success) {
                     // Toggle icon state
                     if (isInWishlist) {
@@ -569,25 +595,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         icon.classList.remove('far');
                         icon.classList.add('fas', 'text-red-500');
                     }
-                    
-                    // Update wishlist count if the function exists
                     if (typeof updateWishlistCount === 'function' && data.wishlist_count !== undefined) {
                         updateWishlistCount(data.wishlist_count);
                     }
-                    
                     showMessage(data.message || (isInWishlist ? 'Đã xóa khỏi danh sách yêu thích' : 'Đã thêm vào danh sách yêu thích'), 'success');
                 } else {
-                    console.error('Request failed:', data.message);
                     showMessage(data.message || 'Có lỗi xảy ra', 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .catch(() => {
                 showMessage('Có lỗi xảy ra', 'error');
             });
         });
-    }
-
+    });
 });
 
 // Use the global updateWishlistCount function from layout
